@@ -1,0 +1,51 @@
+import React, { useState, useEffect } from "react";
+import { Box, Flex, Button, Heading, Text } from "@chakra-ui/react";
+import { FaRegCircle } from "react-icons/fa";
+
+const Index = () => {
+  const [isActive, setIsActive] = useState(false);
+  const [score, setScore] = useState(0);
+  const [reaction, setReaction] = useState(0);
+
+  useEffect(() => {
+    if (isActive) {
+      const randomDelay = Math.floor(Math.random() * 4000) + 1000;
+      const timeout = setTimeout(() => {
+        setIsActive(false);
+      }, randomDelay);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [isActive]);
+
+  const startGame = () => {
+    setIsActive(true);
+    const startTime = new Date().getTime();
+
+    const handleClick = () => {
+      const endTime = new Date().getTime();
+      setReaction(endTime - startTime);
+      setScore((prevScore) => prevScore + 1);
+    };
+
+    window.addEventListener("click", handleClick);
+
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
+  };
+
+  return (
+    <Flex height="100vh" alignItems="center" justifyContent="center" flexDirection="column">
+      <Heading mb={6}>Reaction Test Game</Heading>
+      <Box mb={6}>{isActive ? <FaRegCircle size="100px" color="green" /> : <FaRegCircle size="100px" color="red" />}</Box>
+      <Text mb={6}>Score: {score}</Text>
+      {reaction > 0 && <Text mb={6}>Your reaction time: {reaction} ms</Text>}
+      <Button onClick={startGame} disabled={isActive}>
+        {isActive ? "Wait for the circle" : "Start"}
+      </Button>
+    </Flex>
+  );
+};
+
+export default Index;
